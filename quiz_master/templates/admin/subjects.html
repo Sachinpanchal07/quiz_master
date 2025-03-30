@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Manage Subjects{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Subjects</h2>
+
+    <!-- Add Subject Form -->
+    <form method="POST" action="{{ url_for('admin.add_subject') }}">
+        <input type="text" name="name" placeholder="New Subject Name" required>
+        <button type="submit" class="btn btn-success">Add Subject</button>
+    </form>
+
+    <hr>
+
+    <!-- List of Subjects -->
+    <ul class="list-group">
+        {% for subject in subjects %}
+        <li class="list-group-item">
+            {{ subject.name }}
+            <a href="{{ url_for('admin.chapters', subject_id=subject.id) }}" class="btn btn-primary btn-sm">View Chapters</a>
+            <a href="{{ url_for('admin.delete_subject', id=subject.id) }}" class="btn btn-danger btn-sm">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

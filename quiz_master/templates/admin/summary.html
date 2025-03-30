@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="mb-3">
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-dark btn-sm">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+    </div>
+    <h2 class="text-center mb-4">Admin Summary</h2>
+
+    <div class="row">
+        
+        <!-- Left Side - Summary Cards -->
+        <div class="col-md-4">
+            <div class="d-flex flex-column gap-3">
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Users</h5>
+                        <p class="display-6">{{ users|length }}</p>
+                    </div>
+                </div>
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Subjects</h5>
+                        <p class="display-6">{{ subjects|length }}</p>
+                    </div>
+                </div>
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Chapters</h5>
+                        <p class="display-6">{{ chapters|length }}</p>
+                    </div>
+                </div>
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Quizzes</h5>
+                        <p class="display-6">{{ quizzes|length }}</p>
+                    </div>
+                </div>
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Questions</h5>
+                        <p class="display-6">{{ questions|length }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Bar Chart -->
+        <div class="col-md-8">
+            <div class="card shadow p-3">
+                <h5 class="text-center">Top Scores by Subject</h5>
+                <canvas id="scoreChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var ctx = document.getElementById("scoreChart").getContext("2d");
+
+        // Fetch subject names & top scores from Flask
+        var subjectsData = JSON.parse('{{ subjects|tojson|safe }}');
+        var subjectNames = subjectsData.map(subject => subject.name);
+        var topScores = subjectsData.map(subject => subject.top_score || 0);  // Handle null scores
+
+        new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: subjectNames,
+                datasets: [{
+                    label: "Top Score",
+                    data: topScores,
+                    backgroundColor: "rgba(54, 162, 235, 0.6)",
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

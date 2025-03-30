@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% block title %}Manage Chapters{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Chapters for {{ subject.name }}</h2>
+
+    <!-- Add Chapter Form -->
+    <form method="POST" action="{{ url_for('admin.add_chapter', subject_id=subject.id) }}">
+        <input type="text" name="name" placeholder="New Chapter Name" required>
+        <button type="submit" class="btn btn-success">Add Chapter</button>
+    </form>
+
+    <hr>
+
+    <!-- List of Chapters -->
+    <ul class="list-group">
+        {% for chapter in subject.chapters %}
+        <li class="list-group-item">
+            {{ chapter.name }}
+            <a href="{{ url_for('admin.delete_chapter', id=chapter.id) }}" class="btn btn-danger btn-sm">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('admin.subjects') }}" class="btn btn-secondary mt-3">Back to Subjects</a>
+</div>
+{% endblock %}

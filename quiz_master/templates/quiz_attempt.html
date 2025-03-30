@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg mx-auto" style="max-width: 600px;">
+        <div class="card-body" id="quiz-container">
+            <h2 class="text-center text-primary">{{ quiz.title }}</h2>
+
+            <form id="quiz-form">
+                {% for question in questions %}
+                <div class="mb-4">
+                    <p class="fw-bold">{{ loop.index }}. {{ question.text }}</p>
+
+                    <div class="options">
+                        {% for option in question.options %}
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="question_{{ question.id }}" value="{{ option.id }}" required>
+                            <label class="form-check-label">
+                                {{ option.text }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <input type="hidden" name="quiz_id" value="{{ quiz.id }}">
+                <input type="hidden" name="user_id" value="{{ user_id }}">
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary px-4 py-2">Submit Quiz</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById("quiz-form").addEventListener("submit", async function(event) {
+    event.preventDefault(); 
+
+    let formData = new FormData(this); // Collect form data
+    let response = await fetch("/user/submit_quiz", {  // Replace with actual submission endpoint
+        method: "POST",
+        body: formData
+    });
+
+    let result = await response.json();
+
+    if (response.ok) {
+        let quizContainer = document.getElementById("quiz-container");
+        quizContainer.innerHTML = `
+            <h3 class="text-success text-center">Quiz Submitted Successfully!</h3>
+            <p class="text-center">Total Questions: ${result.total_questions} | Correct Answers: ${result.correct_answers}</p>
+            <div class="text-center mt-3">
+                <a href="/user/dashboard/{{ user_id }}" class="btn btn-success">Go to Dashboard</a>
+            </div>
+        `;
+    } else {
+        alert("Error: " + result.message);
+    }
+});
+</script>
+
+{% endblock %}
